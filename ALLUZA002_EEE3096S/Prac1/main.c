@@ -44,8 +44,19 @@ TIM_HandleTypeDef htim16;
 
 /* USER CODE BEGIN PV */
 // TODO: Define input variables
+const uint8_t patterns[9] = {
+    0b11101001,  // Pattern 1: 1 1 1 0 1 0 0 1
+    0b11010010,  // Pattern 2: 1 1 0 1 0 0 1 0
+    0b10100100,  // Pattern 3: 1 0 1 0 0 1 0 0
+    0b01001000,  // Pattern 4: 0 1 0 0 1 0 0 0
+    0b10010000,  // Pattern 5: 1 0 0 1 0 0 0 0
+    0b00100000,  // Pattern 6: 0 0 1 0 0 0 0 0
+    0b01000000,  // Pattern 7: 0 1 0 0 0 0 0 0
+    0b10000000,  // Pattern 8: 1 0 0 0 0 0 0 0
+    0b00000000   // Pattern 9: 0 0 0 0 0 0 0 0
+};
 int delay = 1000;
-int counter = 1;
+int counter = 0;
 
 /* USER CODE END PV */
 
@@ -92,7 +103,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   // TODO: Start timer TIM16
-  HAL_TIM_Base_Start_IT(&htim16);
+  HAL_TIM_Base_Start(&htim16);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -110,13 +121,18 @@ int main(void)
       delay = 2000;
     }else if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_2) == GPIO_PIN_RESET){
       delay = 1000;
-    }else if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_2) == GPIO_PIN_RESET){
-      counter = 1;
+    }else if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_3) == GPIO_PIN_RESET){
+      counter = 0;
     }//if
     
-    //Set Delay
+    if(counter<9){
+    GPIOB -> ODR &= 0x0000;
+    GPIOB -> ODR |= patterns[counter];
     HAL_Delay(delay);
-  
+    counter++;
+    }else{
+    counter=0;
+    }
 
   }
   /* USER CODE END 3 */
@@ -338,24 +354,10 @@ void TIM16_IRQHandler(void)
 
 	// TODO: Change LED pattern
 	while(1){
-    if (counter == 1)
-    {
-      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);
-      HAL_Delay(delay);
-    }else{
-      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_RESET);
-    }
-    
-
 
 	}//while
 
-
-
-
 	// print something
-
-  
 }
 
 /* USER CODE END 4 */
